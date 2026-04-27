@@ -10,9 +10,15 @@ class TaskManager:
         if os.path.exists(self.f_name):
             with open(self.f_name, "r") as file:
                 self.task = json.load(file)
+
+            for t in self.task:
+                if "priority" not in t:
+                    t["priority"] = "Low"
+
+            self.save_task()
         else:
             self.task = []
-            
+
     def save_task(self):
         with open(self.f_name, "w") as file:
             json.dump(self.task, file, indent=4)
@@ -20,16 +26,20 @@ class TaskManager:
     def add_task(self):
         title = input("Write the Title: ")
         description = input("Write the Description: ")
+        priority = input("Enter Priority (High/Medium/Low): ")
 
-        task = {
-            "title": title,
-            "description": description,
-            "completed": False
-        }
+        if priority == "High" or priority == "Medium" or priority == "Low":
+            task = {
+                "title": title,
+                "description": description,
+                "priority": priority
+            }
 
-        self.task.append(task)
-        self.save_task()
-        print("Successfully Task Added")
+            self.task.append(task)
+            self.save_task()
+            print("Successfully Task Added")
+        else:
+            print("Invalid priority. Please enter High, Medium, or Low")
 
     def view_task(self):
         if len(self.task) == 0:
@@ -38,18 +48,16 @@ class TaskManager:
             print("\nYour Task List")
 
             for i in range(len(self.task)):
-                if self.task[i]["completed"] == True:
-                    status = "Completed"
-                else:
-                    status = "Not Completed"
-
-                print(str(i + 1) + ". " + "Title: "+ self.task[i]["title"] + ".  Description: " + self.task[i]["description"] + " [" + status + "]")
+                print(
+                    str(i + 1) + ". " + self.task[i]["title"] + " - " + self.task[i]["description"] + " [" + self.task[i]["priority"] + " Priority]"
+                )
 
     def delete_task(self):
         if len(self.task) == 0:
             print("There is no task available for delete")
         else:
             self.view_task()
+
             taskNo = input("Enter Task Number to Delete: ")
 
             if taskNo.isdigit():
@@ -64,20 +72,26 @@ class TaskManager:
             else:
                 print("Please enter valid task number")
 
-    def complete(self):
+    def update_task_priority(self):
         if len(self.task) == 0:
-            print("There is no task available to mark as completed")
+            print("There is no task available to update priority")
         else:
             self.view_task()
-            taskNo = input("Enter task number to mark as completed: ")
+
+            taskNo = input("Enter task number to update priority: ")
 
             if taskNo.isdigit():
                 number = int(taskNo)
 
                 if number >= 1 and number <= len(self.task):
-                    self.task[number - 1]["completed"] = True
-                    self.save_task()
-                    print("Task marked as completed!")
+                    new_priority = input("Enter new priority (High/Medium/Low): ")
+
+                    if new_priority == "High" or new_priority == "Medium" or new_priority == "Low":
+                        self.task[number - 1]["priority"] = new_priority
+                        self.save_task()
+                        print("Task priority updated successfully!")
+                    else:
+                        print("Invalid priority. Please enter High, Medium, or Low")
                 else:
                     print("Task Number is not available")
             else:
@@ -88,14 +102,14 @@ tm = TaskManager()
 tm.load_task()
 
 while True:
-    print("\n Task Tracker ")
+    print("\n===== Task Tracker =====")
     print("1. Add Task")
     print("2. View Tasks")
     print("3. Delete Task")
-    print("4. Mark Task as Completed")
+    print("4. Update Task Priority")
     print("5. Exit")
 
-    c = input("Enter the Number You want to do: ")
+    c = input("Enter choice: ")
 
     if c == "1":
         tm.add_task()
@@ -107,7 +121,7 @@ while True:
         tm.delete_task()
 
     elif c == "4":
-        tm.complete()
+        tm.update_task_priority()
 
     elif c == "5":
         print("Exit The program")

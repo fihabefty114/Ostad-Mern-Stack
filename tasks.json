@@ -2,6 +2,12 @@
     {
         "title": "ifty",
         "description": "ifty",
-        "completed": false
+        "completed": false,
+        "priority": "Medium"
+    },
+    {
+        "title": "Data Structure",
+        "description": "Knapsack Algorithms",
+        "priority": "High"
     }
 ]
